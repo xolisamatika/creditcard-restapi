@@ -1,0 +1,38 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: "mongodb"
+    ports:
+      - 27017:27017
+    networks:
+      - xnetwork
+
+  backend:
+    image: backend
+    container_name: "backend"
+    build:
+      context: creditcard-restapi
+    ports:
+      - 8080:8080
+    links:
+      - mongodb
+    networks:
+      - xnetwork
+
+  frontend:
+    image: frontend
+    container_name: "frontend"
+    build:
+      context: vue-app
+    ports:
+      - 8081:80
+    environment:
+      - NODE_ENV=production
+      - MONGODB_ADDRESS=backend
+    networks:
+      - xnetwork
+
+networks:
+  xnetwork:
+    driver: "bridge"
